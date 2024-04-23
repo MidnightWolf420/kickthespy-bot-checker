@@ -98,8 +98,8 @@
             if (serverIcon) {
                 let serverDiv = serverIcon.parentNode;
                 let server = {
-                    name: serverDiv.getAttribute("aria-label").trim(),
-                    id: serverDiv.getAttribute("data-list-item-id").replace("guildsnav___", "")
+                    name: serverDiv.getAttribute("aria-label").replace(/\d{1,} mentions?, /gi, "").trim(),
+                    id: serverDiv.getAttribute("data-list-item-id").replace("", "")
                 };
                 return server;
             } else {
