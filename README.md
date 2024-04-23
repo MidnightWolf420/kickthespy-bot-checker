@@ -1,0 +1,1 @@
+# kickthespy-bot-checker
