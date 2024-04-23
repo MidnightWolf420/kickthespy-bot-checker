@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kick The Spy Bot Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1f1f1f;
+            color: #fff;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .dropdown-content {
+            display: none;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        textarea, button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            resize: none;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #results {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        a {
+            color: #4CAF50; /* Link color */
+            text-decoration: none; /* Remove underline */
+            transition: color 0.3s ease; /* Smooth transition for color change */
+        }
+
+        a:hover {
+            color: #45a049; /* Hover color */
+            text-decoration: underline; /* Underline on hover */
+        }
+    </style>
+</head>
+<body>
+    <h1>Kick The Spy Bot Checker</h1>
+    <button onclick="toggleInstructions()">Instructions</button>
+    <div class="dropdown-content" id="instructions">
+        <div class="instructions" style="background-color: #333; color: #fff; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <p>To extract Discord server IDs and names using the browser console:</p>
+            <ol>
+                <li>Open <a href="https://discord.com/channels/@me" target="_blank" rel="noopener noreferrer">Discord</a> in a web browser and log in to your account.</li>
+                <li>Wait for Discord to fully load.</li>
+                <li>Press <code>F12</code> (or <code>Ctrl + Shift + J</code> on Windows/Linux or <code>Cmd + Option + J</code> on macOS) to open the browser's developer tools.</li>
+                <li>Go to the "Console" tab within the developer tools.</li>
+                <li>Copy and paste the following JavaScript code into the console:</li>
+            </ol>
+            <pre style="background-color: #333; color: #fff; padding: 10px; border-radius: 5px;">
+    var servers = Array.from(document.querySelectorAll("div[aria-label=Servers] > div")).map(server => {
+        let serverIcon = server.querySelector("img");
+        if (serverIcon) {
+            let serverDiv = serverIcon.parentNode;
+            let server = {
+                name: serverDiv.getAttribute("aria-label").trim(),
+                id: serverDiv.getAttribute("data-list-item-id").replace("guildsnav___", "")
+            };
+            return server;
+        } else {
+            return null;
+        }
+    }).filter(server => server != null);
+    console.log(JSON.stringify(servers, null, 2));
+            </pre>
+        </div>
+        <p>Enter the JSON array of server below</p>
+    </div>
+    <textarea id="serverJsonInput" placeholder='[{"name": "name1", "id": "id1"}, {"name": "name2", "id": "id2"}, ...]' rows="10"></textarea>
+    <button onclick="checkBots()">Check Bots</button>
+    <div id="results"></div>
+
+    <script>
+        function toggleInstructions() {
+            const instructionsDiv = document.getElementById("instructions");
+            if (instructionsDiv.style.display === "block") {
+                instructionsDiv.style.display = "none";
+            } else {
+                instructionsDiv.style.display = "block";
+            }
+        }
+
+        async function checkBots() {
+            const serverJsonInput = document.getElementById("serverJsonInput");
+            const jsonString = serverJsonInput.value;
+
+            try {
+                const serverData = JSON.parse(jsonString);
+                if (!Array.isArray(serverData)) {
+                    throw new Error("Input JSON data must be an array");
+                }
+
+                const results = [];
+                for (const server of serverData) {
+                    try {
+                        const response = await fetch(`https://kickthespy.pet/getBot?id=${server.id}`);
+                        const data = await response.json();
+                        if (response.ok && data.id) {
+                            results.push(`${server.name} (${server.id}): Found Bot: ${data.global_name} (${data.username}) - ${data.id}`);
+                        } else {
+                            results.push(`${server.name} (${server.id}): No Bots Found`);
+                        }
+                    } catch (error) {
+                        console.log(`Error fetching ${server.name} (${server.id}):`, error);
+                        results.push(`${server.name} (${server.id}): Error occurred`);
+                    }
+                }
+
+                displayResults(results);
+            } catch (error) {
+                console.error("Error parsing JSON input:", error.message);
+            }
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = results.join("<br>");
+        }
+    </script>
+</body>
+</html>
