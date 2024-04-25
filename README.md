@@ -14,19 +14,24 @@ To extract Discord server IDs and names using the browser console:
 
 ```javascript
 var servers = Array.from(document.querySelectorAll("div[aria-label=Servers] > div")).map(server => {
-    let serverIcon = server.querySelector("img");
-    if (serverIcon) {
-        let serverDiv = serverIcon.parentNode;
-        let server = {
-            name: serverDiv.getAttribute("aria-label").trim(),
-            id: serverDiv.getAttribute("data-list-item-id").replace("guildsnav___", "")
-        };
-        return server;
-    } else {
-        return null;
-    }
+	let serverIcon = server.querySelector("img");
+	if (serverIcon) {
+		let serverDiv = serverIcon.parentNode;
+		let server = {
+			name: serverDiv.getAttribute("aria-label").replace(/\d{1,} mentions?, /gi, "").trim(),
+			id: serverDiv.getAttribute("data-list-item-id").replace("guildsnav___", "")
+		};
+		return server;
+	} else {
+		return null;
+	}
 }).filter(server => server != null);
 console.log(JSON.stringify(servers, null, 2));
+navigator.clipboard.writeText(JSON.stringify(servers, null, 2)).then(() => {
+	console.log("Server list successfully copied to clipboard");
+}).catch((error) => {
+	console.error("Unable to copy text to clipboard, Try copying it manually");
+});
 ```
 6. Go to https://midnightwolf420.github.io/kickthespy-bot-checker/ and paste the json array received from the previous step in the text area.
 7. Press "Check For Bots".
