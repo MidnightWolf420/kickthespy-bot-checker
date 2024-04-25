@@ -4,9 +4,6 @@ This tool allows you to check for spy bots on Discord servers using a JSON array
 
 ## Instructions
 
-<details>
-<summary>Show Instructions</summary>
-
 To extract Discord server IDs and names using the browser console:
 
 1. Open [Discord](https://discord.com/channels/@me) in a web browser and log in to your account.
@@ -31,3 +28,5 @@ var servers = Array.from(document.querySelectorAll("div[aria-label=Servers] > di
 }).filter(server => server != null);
 console.log(JSON.stringify(servers, null, 2));
 ```
+6. Go to https://midnightwolf420.github.io/kickthespy-bot-checker/ and paste the json array received from the previous step in the text area.
+7. Press "Check For Bots".
