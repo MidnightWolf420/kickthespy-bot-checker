@@ -30,7 +30,7 @@ console.log(JSON.stringify(servers, null, 2));
 navigator.clipboard.writeText(JSON.stringify(servers, null, 2)).then(() => {
 	console.log("Server list successfully copied to clipboard");
 }).catch((error) => {
-	console.error("Unable to copy text to clipboard, Try copying it manually");
+	console.error("Unable to copy server list to clipboard, Try copying it manually");
 });
 ```
 6. Go to https://midnightwolf420.github.io/kickthespy-bot-checker/ and paste the json array received from the previous step in the text area.
